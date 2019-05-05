@@ -4,9 +4,11 @@ db:
     emulate: true
     namespace: EG
 
-# plugins:
+plugins:
+  rewrite:
+    package: 'express-gateway-plugin-rewrite'
   # express-gateway-plugin-example:
-  #   param1: 'param from system.config' 
+  #   param1: 'param from system.config'
 
 crypto:
   cipherKey: sensitiveKey

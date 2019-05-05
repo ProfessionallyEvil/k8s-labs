@@ -1062,6 +1062,13 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+express-gateway-plugin-rewrite@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/express-gateway-plugin-rewrite/-/express-gateway-plugin-rewrite-1.3.0.tgz#8dc733e45b032316cc53c2267595c7ff557494b3"
+  integrity sha512-ZlAlUxWL1qTUj+ml58GO9L2WfN/MiL4GPwUlfbc++fUHCsiN9+t5rtmM78L/Byr8m8v/r4nzBm1H2QmZ5z6Exg==
+  dependencies:
+    path-to-regexp "^3.0.0"
+
 express-gateway@^1.16.3:
   version "1.16.3"
   resolved "https://registry.yarnpkg.com/express-gateway/-/express-gateway-1.16.3.tgz#6316010ecb9b94d5961f9ebc53ec5de9663a6560"
@@ -2858,6 +2865,11 @@ path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
+
+path-to-regexp@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-3.0.0.tgz#c981a218f3df543fa28696be2f88e0c58d2e012a"
+  integrity sha512-ZOtfhPttCrqp2M1PBBH4X13XlvnfhIwD7yCLx+GoGoXRPQyxGOTdQMpIzPSPKXAJT/JQrdfFrgdJOyAzvgpQ9A==
 
 path-type@^3.0.0:
   version "3.0.0"
