@@ -4,8 +4,13 @@ admin:
   port: 9876
   host: localhost
 apiEndpoints:
+  api:
+    host: '*'
+    paths: '/*'
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
+  testsvc:
+    url: "http://test.svc:3000/hello"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -17,4 +22,13 @@ policies:
   - proxy
   - rate-limit
 pipelines:
+  default:
+    apiEndpoints:
+      - api
+    policies:
+      -
+        proxy:
+          -
+            action:
+              serviceEndpoint: testsvc
   # see: https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines

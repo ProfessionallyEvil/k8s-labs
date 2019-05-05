@@ -1,0 +1,25 @@
+version: '3'
+services:
+  testsvc:
+    hostname: test.svc
+    build:
+      context: testSvc
+      dockerfile: ./Dockerfile
+    image: arrrspace-testsvc
+    networks:
+      - eg
+    expose:
+      - "3000"
+  gateway:
+    build:
+      context: arrrspaceGateway
+      dockerfile: ./Dockerfile
+    image: arrrspace-gateway
+    ports:
+      - "9090:8080"
+    links:
+      - testsvc:test.svc
+    networks:
+      - eg
+networks:
+  eg:
