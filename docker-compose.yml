@@ -11,14 +11,17 @@ services:
     expose:
       - "3000"
   gateway:
+    hostname: ${GATEWAY_HOSTNAME}
     build:
       context: arrrspaceGateway
       dockerfile: ./Dockerfile
     image: arrrspace-gateway
     ports:
-      - "9090:8080"
+      - "${GATEWAY_HOST_PORT}:8080"
     links:
       - testsvc:test.svc
+    environment:
+      - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
     networks:
       - eg
 networks:
