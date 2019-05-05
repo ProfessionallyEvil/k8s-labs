@@ -22,6 +22,7 @@ services:
       - testsvc:test.svc
     environment:
       - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
+      - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
     networks:
       - eg
 networks:
