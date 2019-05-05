@@ -1,5 +1,13 @@
 version: '3'
 services:
+  app:
+    hostname: ${STATIC_SITE_HOSTNAME}
+    build:
+      context: arrrspaceApp
+      dockerfile: ./Dockerfile
+    image: arrrspace-app
+    ports:
+      - "${STATIC_SITE_HOSTPORT}:80"    
   testsvc:
     hostname: test.svc
     build:
