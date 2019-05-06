@@ -31,7 +31,7 @@ services:
   gateway:
     hostname: ${GATEWAY_HOSTNAME}
     build:
-      context: arrrspaceGateway
+      context: gateway
       dockerfile: ./Dockerfile
     image: arrrspace-gateway
     ports:
