@@ -3,7 +3,7 @@ services:
   app:
     hostname: ${STATIC_SITE_HOSTNAME}
     build:
-      context: arrrspaceApp
+      context: app
       dockerfile: ./Dockerfile
     image: arrrspace-app
     ports:
