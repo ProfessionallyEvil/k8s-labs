@@ -1,7 +1,0 @@
-{
-  "name": "arrrspaceApp",
-  "version": "1.0.0",
-  "description": "Static assets for arrrspace web app",
-  "main": "index.js",
-  "license": "MIT"
-}
