@@ -5,7 +5,7 @@ function respond (req, res, next) {
   next()
 }
 
-var server = restify.createServer()
+var server = restify.createServer({ name: 'testSvc' })
 server.get('/hello/:name', respond)
 server.head('/hello/:name', respond)
 
