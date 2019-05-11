@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "restify": "^8.3.1"
+    "restify": "^8.3.1",
+    "restify-oauth-server": "^0.2.0"
   },
   "scripts": {
     "start": "node index.js"
