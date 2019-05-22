@@ -18,9 +18,9 @@ spec:
         io.kompose.service: testsvc
     spec:
       containers:
-      - image: arrrspace-testsvc
+      - image: arrrspace-testsvc:v1
         name: testsvc
         resources: {}
-      hostname: test.svc
+      hostname: testsvc
       restartPolicy: Always
 status: {}
