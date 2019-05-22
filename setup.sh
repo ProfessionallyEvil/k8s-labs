@@ -3,6 +3,9 @@ set -eou pipefail
 #set -x
 IFS=$'\n\t'
 
+IMAGES=("app" "gateway" "authSvc")
+DEPS=()
+
 # has golang?
 if [[ ! $(which go 2>/dev/null) ]]; then
   echo "[!] Error: Golang does not appear to be installed."
@@ -62,3 +65,29 @@ export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
 # need to load images and apply the configurations to the cluster.
 
 echo "[!] Cluster created"
+
+echo "[!] Building Docker images"
+
+for target in "${IMAGES[@]}"; do
+  cd ./$target
+  echo -e "\n[+] ======== Building image $target ========\n"
+  cat Dockerfile
+  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+  docker build -t arrrspace-$TARGET_LOWER:v1 .
+  cd ../
+done;
+
+echo "[!] Loading docker images into k8s cluster"
+
+for target in "${IMAGES[@]}"; do
+  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+  echo -e "[+] Loading arrrspace-${target} image"
+  kind load docker-image arrrspace-$TARGET_LOWER --name arrrspace
+done
+
+echo "[!] Applying k8s configs"
+
+kubectl apply -f k8s-resources/
+kubectl get deployments,services,pods
+
+echo "[!] All done :)"

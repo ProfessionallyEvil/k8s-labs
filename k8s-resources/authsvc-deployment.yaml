@@ -18,9 +18,9 @@ spec:
         io.kompose.service: authsvc
     spec:
       containers:
-      - image: arrrspace-authsvc
+      - image: arrrspace-authsvc:v1
         name: authsvc
         resources: {}
-      hostname: auth.svc
+      hostname: authsvc
       restartPolicy: Always
 status: {}
