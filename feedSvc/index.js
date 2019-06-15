@@ -1,4 +1,4 @@
-import restify from 'restify'
+const restify = require('restify')
 
 var server = restify.createServer({ name: 'authService' })
 
