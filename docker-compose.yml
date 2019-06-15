@@ -28,6 +28,26 @@ services:
       - eg
     expose:
       - "3000"
+  profilesvc:
+    hostname: profile.svc
+    build:
+      context: profileSvc
+      dockerfile: ./Dockerfile
+    image: arrrspace-profilesvc
+    networks:
+      - eg
+    expose:
+      - "3000"
+  feedsvc:
+    hostname: feed.svc
+    build:
+      context: feedSvc
+      dockerfile: ./Dockerfile
+    image: arrrspace-feedsvc
+    networks:
+      - eg
+    expose:
+      - "3000"
   gateway:
     hostname: ${GATEWAY_HOSTNAME}
     build:
