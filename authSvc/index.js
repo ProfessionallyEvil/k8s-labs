@@ -7,9 +7,9 @@ server.oauth = new OAuthServer({
   model: {}
 })
 
-server.use(restify.acceptParser(server.acceptable))
-server.use(restify.authorizationParser())
-server.use(restify.bodyParser())
+server.use(restify.plugins.acceptParser(server.acceptable))
+server.use(restify.plugins.authorizationParser())
+server.use(restify.plugins.bodyParser())
 
 // Node Oauth2 Server expects the token request to be x-www-url-formencoded according to the Oauth2 spec
 // Restify's body parser puts formencoded params in req.params, so we'll need a quick little bit of middleware to copy them over to the body
