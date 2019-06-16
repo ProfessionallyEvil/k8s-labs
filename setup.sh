@@ -77,7 +77,7 @@ for target in "${IMAGES[@]}"; do
   cd ../
 done;
 
-echo "[!] Loading docker images into k8s cluster"
+echo "[+] Loading docker images into k8s cluster"
 
 for target in "${IMAGES[@]}"; do
   TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
@@ -85,10 +85,12 @@ for target in "${IMAGES[@]}"; do
   kind load docker-image arrrspace-$TARGET_LOWER --name arrrspace
 done
 
-echo "[!] Applying k8s configs"
+echo "[+] Applying k8s configs"
 
 kubectl apply -f k8s-resources/
 kubectl get deployments,services,pods
 
-echo "[!] All done :)"
+MASTER_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' arrrspace-control-plane)
+echo -e "\n[!] All done :)"
+echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
 echo "[!] Don't forget to run - export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")""
