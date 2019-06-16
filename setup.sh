@@ -91,3 +91,4 @@ kubectl apply -f k8s-resources/
 kubectl get deployments,services,pods
 
 echo "[!] All done :)"
+echo "[!] Don't forget to run - export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")""
