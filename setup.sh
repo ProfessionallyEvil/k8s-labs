@@ -3,7 +3,7 @@ set -eou pipefail
 #set -x
 IFS=$'\n\t'
 
-IMAGES=("app" "gateway" "authSvc")
+IMAGES=("app" "gateway" "authSvc" "jankinsSvc")
 DEPS=()
 
 # has golang?

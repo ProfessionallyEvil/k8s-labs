@@ -18,13 +18,13 @@ spec:
         io.kompose.service: gateway
     spec:
       containers:
-      - env:
-        - name: GATEWAY_HOSTNAME
-        - name: STATIC_SITE_HOSTNAME
-        image: arrrspace-gateway:v1
-        name: gateway
-        ports:
-        - containerPort: 8080
-        resources: {}
+        - env:
+            - name: GATEWAY_HOSTNAME
+            - name: STATIC_SITE_HOSTNAME
+          image: arrrspace-gateway:v1
+          name: gateway
+          ports:
+            - containerPort: 8080
+          resources: {}
       restartPolicy: Always
 status: {}
