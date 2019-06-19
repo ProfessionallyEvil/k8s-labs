@@ -34,6 +34,9 @@ services:
       context: profileSvc
       dockerfile: ./Dockerfile
     image: arrrspace-profilesvc
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     networks:
       - eg
       - int
@@ -55,6 +58,9 @@ services:
       context: simpleStorage
       dockerfile: ./Dockerfile
     image: simple-storagesvc
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     networks:
       - int
     expose:
