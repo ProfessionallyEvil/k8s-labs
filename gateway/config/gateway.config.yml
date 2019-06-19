@@ -4,13 +4,18 @@ admin:
   port: 9876
   host: localhost
 apiEndpoints:
-  testapi:
+  profile:
     host: '*'
-    paths: ['/test/:name']
+    paths: ['/profile/*']
+  feed:
+    host: '*'
+    paths: ['/feed/*']
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
-  testsvc:
-    url: "http://test.svc:3000"
+  profilesvc:
+    url: "http://profile.svc:3000"
+  feedsvc:
+    url: "http://feed.svc:3000"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -23,20 +28,22 @@ policies:
   - rate-limit
   - rewrite
 pipelines:
-  default:
+  feed:
     apiEndpoints:
-      - testapi
+      - feed
     policies:
-      -
-        rewrite:
-          condition:
-            name: pathmatch
-            match: '/test/:name'
-          action:
-            rewrite: '/hello/:name'
       -
         proxy:
           -
             action:
-              serviceEndpoint: testsvc
+              serviceEndpoint: feedsvc
+  profile:
+    apiEndpoints:
+      - profile
+    policies:
+      -
+        proxy:
+          -
+            action:
+              serviceEndpoint: profilesvc
   # see: https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines
