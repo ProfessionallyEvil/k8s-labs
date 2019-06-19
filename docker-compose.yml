@@ -75,6 +75,8 @@ services:
       - "${GATEWAY_HOST_PORT}:8080"
     links:
       - testsvc:test.svc
+      - profilesvc:profile.svc
+      - feedsvc:feed.svc
     environment:
       - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
       - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
