@@ -36,6 +36,7 @@ services:
     image: arrrspace-profilesvc
     networks:
       - eg
+      - int
     expose:
       - "3000"
   feedsvc:
@@ -48,6 +49,16 @@ services:
       - eg
     expose:
       - "3000"
+  simplestoragesvc:
+    hostname: simplestorage.svc
+    build:
+      context: simpleStorage
+      dockerfile: ./Dockerfile
+    image: simple-storagesvc
+    networks:
+      - int
+    expose:
+      - "9000"
   gateway:
     hostname: ${GATEWAY_HOSTNAME}
     build:
@@ -65,3 +76,4 @@ services:
       - eg
 networks:
   eg:
+  int:
