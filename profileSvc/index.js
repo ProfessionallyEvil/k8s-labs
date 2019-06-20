@@ -1,6 +1,6 @@
 const restify = require('restify')
 
-var server = restify.createServer({ name: 'authService' })
+var server = restify.createServer({ name: 'profileService' })
 
 server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.authorizationParser())
