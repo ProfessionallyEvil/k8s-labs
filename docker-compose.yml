@@ -66,10 +66,12 @@ services:
     image: arrrspace-gateway
     ports:
       - "${GATEWAY_HOST_PORT}:8080"
+    depends_on:
+      - profilesvc
+      - feedsvc
     links:
-      - testsvc:testsvc
-      - profilesvc:profilesvc
-      - feedsvc:feedsvc
+      - profilesvc
+      - feedsvc
     environment:
       - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
       - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
