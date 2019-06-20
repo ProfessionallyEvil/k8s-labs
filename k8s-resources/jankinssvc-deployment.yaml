@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: jankinssvc
   labels:
-    app: jenkins
+    app: jankinssvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins
+      app: jankinssvc
   template:
     metadata:
       labels:
-        app: jenkins
+        app: jankinssvc
     spec:
-      serviceAccountName: op-sa
+      serviceAccountName: deploy-manager-sa
       containers:
         - name: jankinssvc
           image: arrrspace-jankinssvc:v1
