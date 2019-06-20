@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: testsvc
-  name: testsvc
+    io.kompose.service: gateway
+  name: gateway
 spec:
   replicas: 1
   strategy: {}
@@ -15,11 +15,18 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: testsvc
+        io.kompose.service: gateway
     spec:
       containers:
-      - image: arrrspace-testsvc
-        name: testsvc
+      - env:
+        - name: GATEWAY_HOSTNAME
+          value: api.arrrspace.local
+        - name: STATIC_SITE_HOSTNAME
+          value: www.arrrspace.local
+        image: arrrspace-gateway
+        name: gateway
+        ports:
+        - containerPort: 8080
         resources: {}
       restartPolicy: Always
 status: {}

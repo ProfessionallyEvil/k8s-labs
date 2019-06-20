@@ -2,12 +2,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   namespace: default
-  name: op-rolebinding
+  name: deploy-manger-rolebinding
 subjects:
   - kind: ServiceAccount
     namespace: default
-    name: op-sa
+    name: deploy-manager-sa
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: op-sa-role
+  name: deploy-manager-role

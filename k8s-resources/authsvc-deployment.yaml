@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert
+    kompose.cmd: kompose convert -f ../docker-compose.yml
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
@@ -20,9 +20,6 @@ spec:
       containers:
         - image: arrrspace-authsvc:v1
           name: authsvc
-          ports:
-            - containerPort: 3000
           resources: {}
-      hostname: authsvc
       restartPolicy: Always
 status: {}

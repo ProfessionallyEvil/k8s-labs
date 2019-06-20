@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: testsvc
-  name: testsvc
+    io.kompose.service: simplestoragesvc
+  name: simplestoragesvc
 spec:
   replicas: 1
   strategy: {}
@@ -15,11 +15,16 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: testsvc
+        io.kompose.service: simplestoragesvc
     spec:
       containers:
-      - image: arrrspace-testsvc
-        name: testsvc
+      - env:
+        - name: MINIO_ACCESS_KEY
+          value: foo
+        - name: MINIO_SECRET_KEY
+          value: notbar
+        image: simple-storagesvc
+        name: simplestoragesvc
         resources: {}
       restartPolicy: Always
 status: {}
