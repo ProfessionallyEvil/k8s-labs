@@ -9,7 +9,7 @@ services:
     ports:
       - "${STATIC_SITE_HOSTPORT}:80"
   testsvc:
-    hostname: test.svc
+    hostname: testsvc
     build:
       context: testSvc
       dockerfile: ./Dockerfile
@@ -19,7 +19,7 @@ services:
     expose:
       - "3000"
   authsvc:
-    hostname: auth.svc
+    hostname: authsvc
     build:
       context: authSvc
       dockerfile: ./Dockerfile
@@ -29,7 +29,7 @@ services:
     expose:
       - "3000"
   profilesvc:
-    hostname: profile.svc
+    hostname: profilesvc
     build:
       context: profileSvc
       dockerfile: ./Dockerfile
@@ -43,7 +43,7 @@ services:
     expose:
       - "3000"
   feedsvc:
-    hostname: feed.svc
+    hostname: feedsvc
     build:
       context: feedSvc
       dockerfile: ./Dockerfile
@@ -53,7 +53,7 @@ services:
     expose:
       - "3000"
   simplestoragesvc:
-    hostname: simplestorage.svc
+    hostname: simplestoragesvc
     build:
       context: simpleStorage
       dockerfile: ./Dockerfile
@@ -73,10 +73,12 @@ services:
     image: arrrspace-gateway
     ports:
       - "${GATEWAY_HOST_PORT}:8080"
+    depends_on:
+      - profilesvc
+      - feedsvc
     links:
-      - testsvc:test.svc
-      - profilesvc:profile.svc
-      - feedsvc:feed.svc
+      - profilesvc
+      - feedsvc
     environment:
       - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
       - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
