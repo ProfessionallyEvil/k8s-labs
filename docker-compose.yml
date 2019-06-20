@@ -7,21 +7,23 @@ services:
     image: arrrspace-app
     ports:
       - "${STATIC_SITE_HOSTPORT}:80"
-  testsvc:
-    build:
-      context: testSvc
-      dockerfile: ./Dockerfile
-    image: arrrspace-testsvc
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     networks:
-      - eg
-    expose:
-      - "3000"
+      - int
   authsvc:
     build:
       context: authSvc
       dockerfile: ./Dockerfile
     image: arrrspace-authsvc
+    depends_on:
+      - mongodb
     networks:
+      - int
       - eg
     expose:
       - "3000"
@@ -33,6 +35,8 @@ services:
     environment:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    depends_on:
+      - mongodb
     networks:
       - eg
       - int
@@ -43,8 +47,11 @@ services:
       context: feedSvc
       dockerfile: ./Dockerfile
     image: arrrspace-feedsvc
+    depends_on:
+      - mongodb
     networks:
       - eg
+      - int
     expose:
       - "3000"
   simplestoragesvc:
