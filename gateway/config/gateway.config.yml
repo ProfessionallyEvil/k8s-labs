@@ -13,9 +13,9 @@ apiEndpoints:
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
   profilesvc:
-    url: "http://profile.svc:3000"
+    url: "http://profilesvc:3000"
   feedsvc:
-    url: "http://feed.svc:3000"
+    url: "http://feedsvc:3000"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -41,6 +41,14 @@ pipelines:
     apiEndpoints:
       - profile
     policies:
+      -
+        rewrite:
+          -
+            condition:
+              name: pathmatch
+              match: /profile/:route
+            action:
+              rewrite: /:route
       -
         proxy:
           -
