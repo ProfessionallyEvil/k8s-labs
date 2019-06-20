@@ -6,14 +6,14 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: gateway
-  name: gateway
+    io.kompose.service: app
+  name: app
 spec:
   ports:
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
+  - name: "9095"
+    port: 9095
+    targetPort: 80
   selector:
-    io.kompose.service: gateway
+    io.kompose.service: app
 status:
   loadBalancer: {}

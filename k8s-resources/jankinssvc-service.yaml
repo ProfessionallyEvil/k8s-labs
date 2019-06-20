@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: jankinssvc
 spec:
-  type: NodePort
   ports:
-    - name: '8080'
+    - protocol: TCP
       port: 8080
-      nodePort: 31337
-      targetPort: 8080
+  selector:
+    app: jankinssvc
+status:
+  loadBalancer: {}

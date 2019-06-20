@@ -1,7 +1,6 @@
 version: '3'
 services:
   app:
-    hostname: ${STATIC_SITE_HOSTNAME}
     build:
       context: app
       dockerfile: ./Dockerfile
@@ -9,7 +8,6 @@ services:
     ports:
       - "${STATIC_SITE_HOSTPORT}:80"
   testsvc:
-    hostname: testsvc
     build:
       context: testSvc
       dockerfile: ./Dockerfile
@@ -19,7 +17,6 @@ services:
     expose:
       - "3000"
   authsvc:
-    hostname: authsvc
     build:
       context: authSvc
       dockerfile: ./Dockerfile
@@ -29,7 +26,6 @@ services:
     expose:
       - "3000"
   profilesvc:
-    hostname: profilesvc
     build:
       context: profileSvc
       dockerfile: ./Dockerfile
@@ -43,7 +39,6 @@ services:
     expose:
       - "3000"
   feedsvc:
-    hostname: feedsvc
     build:
       context: feedSvc
       dockerfile: ./Dockerfile
@@ -53,7 +48,6 @@ services:
     expose:
       - "3000"
   simplestoragesvc:
-    hostname: simplestoragesvc
     build:
       context: simpleStorage
       dockerfile: ./Dockerfile
@@ -66,7 +60,6 @@ services:
     expose:
       - "9000"
   gateway:
-    hostname: ${GATEWAY_HOSTNAME}
     build:
       context: gateway
       dockerfile: ./Dockerfile

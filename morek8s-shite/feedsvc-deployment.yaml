@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: testsvc
-  name: testsvc
+    io.kompose.service: feedsvc
+  name: feedsvc
 spec:
   replicas: 1
   strategy: {}
@@ -15,11 +15,11 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: testsvc
+        io.kompose.service: feedsvc
     spec:
       containers:
-      - image: arrrspace-testsvc
-        name: testsvc
+      - image: arrrspace-feedsvc
+        name: feedsvc
         resources: {}
       restartPolicy: Always
 status: {}
