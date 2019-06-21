@@ -20,10 +20,24 @@ server.use((req, res, next) => {
 })
 
 server.get('/by/:author/:page?', async (req, res, next) => {
-  console.log(`Get posts by ${req.params.author}`)
-  // let result = await Post.find({ author: req.params.author }).limit(10).skip(toPage(req.params.page) * 10).exec()
-  // console.log('query result', result)
-  // res.json(200, result)
+  await Post.find({ author: req.params.author }, '_id author message timestamp').sort({ timestamp: 'desc' }).limit(10).skip(toPage(req.params.page) * 10).exec().then((data) => {
+    res.json(200, data)
+  })
+})
+
+server.post('/', async (req, res, next) => {
+  if (req.body.author && req.body.message) {
+    await new Post({
+      author: req.body.author,
+      message: req.body.message,
+      timestamp: Date.now(),
+      replies: []
+    }).save().then(() => {
+      res.json(200, { message: 'posted' })
+    })
+  } else {
+    res.json(400, { message: 'author and message are required fields' })
+  }
 })
 
 mongoose.connect('mongodb://dbase:27017', { useNewUrlParser: true, dbName: 'arrrspace', user: 'root', pass: 'toor', auth: { authdb: 'admin' }, reconnectTires: 20, reconnectInterval: 1000 })
@@ -34,11 +48,11 @@ server.listen(3000, async function () {
 })
 
 function toPage (pageParam) {
-  pageParam = Number(pageParam)
-  if (isNaN(pageParam) || pageParam < 0) {
-    pageParam = 1
+  let page = Number(pageParam)
+  if (isNaN(page) || page < 0) {
+    return 0
   }
-  return pageParam.toFixed(0)
+  return page.toFixed(0)
 }
 
 async function seedData () {
