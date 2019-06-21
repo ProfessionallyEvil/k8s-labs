@@ -92,7 +92,7 @@ function generateAuthToken (user, admin = false) {
   return jwt.encode(process.env.LEGACY_AUTH_SECRET, {
     iss: 'arrrspace_legacy',
     aud: 'arrrspace',
-    iat: Date.now().toString(),
+    iat: Number(Date.now()),
     admin: admin,
     email: user.email,
     author: user.defaultAuthor
