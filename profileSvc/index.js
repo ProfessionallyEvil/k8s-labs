@@ -8,6 +8,7 @@ const minioClient = new Minio.Client({
   accessKey: process.env.MINIO_ACCESS_KEY,
   secretKey: process.env.MINIO_SECRET_KEY
 })
+const authorizer = require('./middleware/authorizer')
 
 var server = restify.createServer({ name: 'profileService' })
 
@@ -22,13 +23,13 @@ server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.authorizationParser())
 server.use(restify.plugins.bodyParser())
 
-server.get('/:author', async (req, res, next) => {
+server.get('/:author', authorizer, async (req, res, next) => {
   await Author.findOne({ name: req.params.author }, 'name signature following').exec().then((author) => {
     res.json(200, author)
   })
 })
 
-server.get('/:author/avatar', async (req, res, next) => {
+server.get('/:author/avatar', authorizer, async (req, res, next) => {
   let stat = await minioClient.statObject('arrrspace-avatars', req.params.author).catch((err) => {
     res.json(400, { message: err })
   })
