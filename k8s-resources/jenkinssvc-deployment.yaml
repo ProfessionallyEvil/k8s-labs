@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jankinssvc
+  name: jenkinssvc
   labels:
-    app: jankinssvc
+    app: jenkinssvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jankinssvc
+      app: jenkinssvc
   template:
     metadata:
       labels:
-        app: jankinssvc
+        app: jenkinssvc
     spec:
       serviceAccountName: deploy-manager-sa
       containers:
-        - name: jankinssvc
-          image: arrrspace-jankinssvc:v1
+        - name: jenkinssvc
+          image: arrrspace-jenkinssvc:v1
           env:
             - name: JAVA_OPTS
               value: -Djenkins.install.runSetupWizard=false
