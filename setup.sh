@@ -7,7 +7,7 @@ IMAGES=(
   "app" 
   "gateway" 
   "authSvc" 
-  "jankinsSvc" 
+  "jenkinsSvc" 
   "feedSvc" 
   "profileSvc"
   "simpleStorage"
