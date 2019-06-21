@@ -23,7 +23,7 @@ server.use(restify.plugins.authorizationParser())
 server.use(restify.plugins.bodyParser())
 
 server.get('/:author', async (req, res, next) => {
-  await Author.findOne({ name: req.params.author }, 'name signature avatar following').exec().then((author) => {
+  await Author.findOne({ name: req.params.author }, 'name signature following').exec().then((author) => {
     res.json(200, author)
   })
 })
