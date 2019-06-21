@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "mongoose": "^5.6.0",
     "restify": "^8.3.3"
   },
   "devDependencies": {
