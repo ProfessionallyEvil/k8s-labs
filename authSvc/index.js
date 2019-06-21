@@ -3,6 +3,12 @@ const OAuthServer = require('restify-oauth-server')
 
 var server = restify.createServer({ name: 'authService' })
 
+/* const mongoose = require('mongoose')
+mongoose.connect('mongodb://dbase:27017', { useNewUrlParser: true, dbName: 'test', user: 'root', pass: 'toor', auth: { authdb: 'admin' }, reconnectTires: 20, reconnectInterval: 1000 })
+const Cat = mongoose.model('Cat', { name: String })
+const kitty = new Cat({ name: 'Mitch' })
+kitty.save().then(() => { console.log('meow') }) */
+
 server.oauth = new OAuthServer({
   model: {}
 })
