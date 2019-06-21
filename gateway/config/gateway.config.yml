@@ -33,6 +33,18 @@ pipelines:
       - feed
     policies:
       -
+        log:
+          - action:
+              message: ${req.method} ${req.originalUrl}
+      -
+        rewrite:
+          -
+            condition:
+              name: regexpmatch
+              match: ^/feed/(.*)$
+            action:
+              rewrite: /$1
+      -
         proxy:
           -
             action:
