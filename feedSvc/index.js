@@ -19,6 +19,8 @@ server.use((req, res, next) => {
   return next()
 })
 
+server.use(require('./middleware/authorizer'))
+
 server.get('/by/:author/:page', async (req, res, next) => {
   await Post.find({ author: req.params.author }, '_id author message timestamp').sort({ timestamp: 'desc' }).limit(10).skip(toPage(req.params.page) * 10).exec().then((data) => {
     res.json(200, data)
@@ -26,9 +28,9 @@ server.get('/by/:author/:page', async (req, res, next) => {
 })
 
 server.post('/', async (req, res, next) => {
-  if (req.body.author && req.body.message) {
+  if (req.body.message) {
     await new Post({
-      author: req.body.author,
+      author: req.body.author || req.user.author,
       message: req.body.message,
       timestamp: Date.now(),
       replies: []
