@@ -19,7 +19,7 @@ server.use((req, res, next) => {
   return next()
 })
 
-server.get('/by/:author/:page?', async (req, res, next) => {
+server.get('/by/:author/:page', async (req, res, next) => {
   await Post.find({ author: req.params.author }, '_id author message timestamp').sort({ timestamp: 'desc' }).limit(10).skip(toPage(req.params.page) * 10).exec().then((data) => {
     res.json(200, data)
   })
