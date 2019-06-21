@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "ded712ce-4360-47cb-b20b-c3a386f89fc5",
+		"name": "Arrrspace",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetFeedByUser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/feed/by/:user/:page",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"feed",
+						"by",
+						":user",
+						":page"
+					],
+					"variable": [
+						{
+							"key": "user",
+							"value": "yondu"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post to Feed",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"message\": \"What's up?\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9090/feed/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"feed",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/profile/:user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"profile",
+						":user"
+					],
+					"variable": [
+						{
+							"key": "user",
+							"value": "yondu"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Avatar",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/profile/:user/avatar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"profile",
+						":user",
+						"avatar"
+					],
+					"variable": [
+						{
+							"key": "user",
+							"value": "yondu"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Avatar",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "avatar",
+							"type": "file",
+							"src": "/Users/mic/Documents/itty-bittys-Guardians-of-the-Galaxy-Yondu-Udonta-Stuffed-Animal-root-1KDD1548_KDD1548_1470_1.jpg_Source_Image.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:9090/profile/:user/avatar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"profile",
+						":user",
+						"avatar"
+					],
+					"variable": [
+						{
+							"key": "user",
+							"value": "yondu"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User (legacy)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"mic@secureideas.com\",\n\t\"password\": \"Hello BSidesAVL\",\n\t\"author\": \"mic_wg\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9090/auth/legacy/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"auth",
+						"legacy",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Legacy Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"yondu@ravager.net\",\n\t\"password\": \"umbrella\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9090/auth/legacy/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"auth",
+						"legacy",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
