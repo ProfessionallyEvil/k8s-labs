@@ -57,10 +57,10 @@ pipelines:
         rewrite:
           -
             condition:
-              name: pathmatch
-              match: /profile/:route
+              name: regexpmatch
+              match: ^/profile/(.*)$
             action:
-              rewrite: /:route
+              rewrite: /$1
       -
         proxy:
           -
