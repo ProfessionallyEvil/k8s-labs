@@ -10,12 +10,17 @@ apiEndpoints:
   feed:
     host: '*'
     paths: ['/feed/*']
+  auth:
+    host: '*'
+    paths: ['/auth/*']
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
   profilesvc:
     url: "http://profilesvc:3000"
   feedsvc:
     url: "http://feedsvc:3000"
+  authsvc:
+    url: "http://authsvc:3000"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -66,4 +71,21 @@ pipelines:
           -
             action:
               serviceEndpoint: profilesvc
+  auth:
+    apiEndpoints:
+      - auth
+    policies:
+      -
+        rewrite:
+          -
+            condition:
+              name: regexpmatch
+              match: ^/auth/(.*)$
+            action:
+              rewrite: /$1
+      -
+        proxy:
+          -
+            action:
+              serviceEndpoint: authsvc
   # see: https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines
