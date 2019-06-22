@@ -38,6 +38,15 @@ pipelines:
       - feed
     policies:
       -
+        cors:
+          -
+            action:
+              origin: true
+              methods: 'GET,POST'
+              allowedHeaders: ['Content-Type', 'Authorization']
+              credentials: true
+              optionsSuccessStatus: 204
+      -
         log:
           - action:
               message: ${req.method} ${req.originalUrl}
@@ -59,6 +68,15 @@ pipelines:
       - profile
     policies:
       -
+        cors:
+          -
+            action:
+              origin: true
+              methods: 'GET,POST'
+              allowedHeaders: ['Content-Type', 'Authorization']
+              credentials: true
+              optionsSuccessStatus: 204
+      -
         rewrite:
           -
             condition:
@@ -75,6 +93,15 @@ pipelines:
     apiEndpoints:
       - auth
     policies:
+      -
+        cors:
+          -
+            action:
+              origin: true
+              methods: 'GET,POST'
+              allowedHeaders: ['Content-Type', 'Authorization']
+              credentials: true
+              optionsSuccessStatus: 204      
       -
         rewrite:
           -
