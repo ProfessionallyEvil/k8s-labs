@@ -20,7 +20,9 @@ spec:
       containers:
         - env:
             - name: MINIO_ACCESS_KEY
+              value: accesskey
             - name: MINIO_SECRET_KEY
+              value: secretkey
           image: arrrspace-profilesvc:v1
           name: profilesvc
           resources: {}

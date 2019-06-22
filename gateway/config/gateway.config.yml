@@ -13,6 +13,9 @@ apiEndpoints:
   auth:
     host: '*'
     paths: ['/auth/*']
+  jenkins:
+    host: '*'
+    paths: ['/jenkins/*']
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
   profilesvc:
@@ -21,6 +24,8 @@ serviceEndpoints:
     url: "http://feedsvc:3000"
   authsvc:
     url: "http://authsvc:3000"
+  jenkinssvc:
+    url: "http://jenkinssvc:8080"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -33,6 +38,27 @@ policies:
   - rate-limit
   - rewrite
 pipelines:
+  jenkins:
+    apiEndpoints:
+      - jenkins 
+    policies:
+      -
+        log:
+          - action:
+              message: ${req.method} ${req.originalUrl}
+      -
+        rewrite:
+          -
+            condition:
+              name: regexpmatch
+              match: ^/jenkins/(.*)$
+            action:
+              rewrite: /$1
+      -
+        proxy:
+          -
+            action:
+              serviceEndpoint: jenkinssvc
   feed:
     apiEndpoints:
       - feed

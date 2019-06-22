@@ -10,4 +10,7 @@ spec:
     app: simplestoragesvc
 status:
   loadBalancer: {}
+<<<<<<< HEAD
 
+=======
+>>>>>>> janky shite
