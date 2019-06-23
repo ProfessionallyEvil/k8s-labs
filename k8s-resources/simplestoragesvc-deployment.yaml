@@ -1,33 +1,28 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f ../docker-compose.yml
-    kompose.version: 1.17.0 (a74acad)
-  creationTimestamp: null
-  labels:
-    io.kompose.service: simplestoragesvc
   name: simplestoragesvc
+  labels:
+    app: simplestoragesvc
 spec:
   replicas: 1
-  strategy: {}
+  selector:
+    matchLabels:
+      app: simplestoragesvc
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        io.kompose.service: simplestoragesvc
+        app: simplestoragesvc
     spec:
       containers:
-        - env:
+        - name: simplestoragesvc
+          image: arrrspace-simplestorage:v1
+          env:
             - name: MINIO_ACCESS_KEY
               value: accesskey
             - name: MINIO_SECRET_KEY
               value: secretkey
-          image: arrrspace-simplestorage:v1
           ports:
             - name: 'http'
               containerPort: 9000
-          name: simplestoragesvc
-          resources: {}
       restartPolicy: Always
-status: {}

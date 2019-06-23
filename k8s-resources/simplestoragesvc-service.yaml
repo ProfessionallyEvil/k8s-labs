@@ -1,16 +1,13 @@
 apiVersion: v1
-kind: Service 
+kind: Service
 metadata:
   name: simplestoragesvc
 spec:
   ports:
     - protocol: TCP
       port: 9000
+      targetPort: 9000
   selector:
     app: simplestoragesvc
 status:
   loadBalancer: {}
-<<<<<<< HEAD
-
-=======
->>>>>>> janky shite
