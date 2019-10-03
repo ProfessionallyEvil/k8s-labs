@@ -91,7 +91,7 @@ echo "[+] Loading docker images into k8s cluster"
 for target in "${IMAGES[@]}"; do
   TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
   echo -e "[+] Loading arrrspace-${target} image"
-  kind load docker-image arrrspace-$TARGET_LOWER --name arrrspace
+  kind load docker-image arrrspace-$TARGET_LOWER:v1 --name arrrspace
 done
 
 echo "[+] Applying k8s configs"

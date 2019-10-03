@@ -2,6 +2,8 @@
 
 FIRST BUILD IN PROGRESS
 
+*Vagrant build require the vagrant-disksize plugin* - `vagrant plugin install vagrant-disksize`
+
 Goals:
 
 - [ ] Containerized microservices to back a faux social app
