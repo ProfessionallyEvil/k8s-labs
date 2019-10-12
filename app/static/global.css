@@ -1,6 +1,6 @@
 :root {
 	--bg-dark: #261447;
-	--bg-med: #261447;
+	--bg-med: #8f31b8;
 	--text-main: #ff3864;
 	--text-secondary: #2de2e6;
 	--highlight: #ff6c11;
@@ -17,7 +17,7 @@ body {
 	font-size: 14px;
 	line-height: 1.5;
 	color: var(--text-main);
-	background-color: var(--bg-med);
+	background-color: var(--bg-dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
