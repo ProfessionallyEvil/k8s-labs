@@ -3,3 +3,5 @@ go.mod
 go.sum
 .vagrant/
 *.log
+**/__sapper__/
+**/node_modules/
