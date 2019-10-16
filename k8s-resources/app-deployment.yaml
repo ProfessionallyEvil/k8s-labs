@@ -1,16 +1,21 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f ../docker-compose.yml
-    kompose.version: 1.17.0 (a74acad)
-  creationTimestamp: null
   labels:
     io.kompose.service: app
   name: app
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
-  strategy: {}
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       creationTimestamp: null
@@ -18,10 +23,18 @@ spec:
         io.kompose.service: app
     spec:
       containers:
-        - image: arrrspace-app:v1
-          name: app
-          ports:
-            - containerPort: 80
-          resources: {}
+      - image: arrrspace-app:v1
+        imagePullPolicy: IfNotPresent
+        name: app
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 status: {}
