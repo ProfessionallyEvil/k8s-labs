@@ -2,6 +2,7 @@ FROM node:latest
 
 WORKDIR /src/
 COPY ./ /src/
+ENV APIURL api.arrrspace.wtf
 RUN npm install
 RUN npm run export
 
