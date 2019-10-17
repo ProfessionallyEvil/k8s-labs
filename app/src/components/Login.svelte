@@ -1,5 +1,12 @@
 <script>
+  import { onMount } from 'svelte';
   let showSignup = true;
+
+  onMount(async function() {
+    const response = await fetch('http://' + process.env.APIURL + '/auth/token');
+    const json = await response.json();
+    console.log(json);
+  })
 </script>
 
 <style>
