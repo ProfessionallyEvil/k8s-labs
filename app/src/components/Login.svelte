@@ -1,12 +1,39 @@
 <script>
   import { onMount } from 'svelte';
   let showSignup = true;
+  let email = '';
+  let password = '';
 
-  onMount(async function() {
+  /*onMount(async function() {
     const response = await fetch('http://' + process.env.APIURL + '/auth/token');
     const json = await response.json();
     console.log(json);
-  })
+  })*/
+
+  async function submit(e, action) {
+    const response = await fetch(`http://${process.env.APIURL}/auth/${action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-url-formencoded'
+      },
+      body: `email=${email}&password=${password}`
+    });
+    const text = await response.text();
+    console.log(text);
+  }
+
+  function toggleTab(e) {
+    console.log(e);
+    if (e.target.id === 'signupTab') {
+      e.target.parentElement.classList.add('active');
+      document.getElementById('loginTab').parentElement.classList.remove('active');
+      showSignup = true;
+    } else if (e.target.id === 'loginTab') {
+      e.target.parentElement.classList.add('active')
+      document.getElementById('signupTab').parentElement.classList.remove('active');
+      showSignup = false;
+    }
+  }
 </script>
 
 <style>
@@ -55,9 +82,9 @@
     color: #fff;
   }
 
-  .tab-content > div:last-child {
+  /*.tab-content > div:last-child {
     display: none;
-  }
+  }*/
 
   label {
     position: absolute;
@@ -164,50 +191,64 @@
     <ul class='tab-group'>
       <li class='tab active'>
         <a 
+          id='signupTab'
           href='/login/#signup'
+          on:click|preventDefault={ e => toggleTab(e) }
         >
           Sign Up
         </a>
       </li> 
-      <li class='tab'><a href='/login/#login'>Login</a></li>
+      <li class='tab'>
+        <a 
+          id='loginTab'
+          href='/login/#login'
+          on:click|preventDefault={ e => toggleTab(e) }
+        >
+          Login
+        </a>
+      </li>
     </ul>
+    
     <div class='tab-content'>
+      {#if showSignup === true}
       <div id='signup'>
         <h1>Arrr, get on board!</h1>
-        <form action='/'>
+        <form>
           <div class='field-wrap'>
             <label>
               Email<span class='req'>*</span>
             </label> 
-            <input type='text' required autocomplete='off' />
+            <input bind:value={email} type='text' required autocomplete='off' />
           </div>
           <div class='field-wrap'>
             <label>
               Set a password<span class='req'>*</span>
             </label>
-            <input type='password' required autocomplete='off' />
+            <input bind:value={password} type='password' required autocomplete='off' />
           </div>
-          <button type='submit' class='button button-block'>Come aboard</button>
+          <button on:click|preventDefault={e => submit(e, 'signup')} type='submit' class='button button-block'>Come aboard</button>
         </form>
       </div> 
+      {:else}
       <div id='login'>
         <h1>Welcome back, Cyber Bos'n</h1> 
-        <form action='/'>
+        <form>
           <div class='field-wrap'>
             <label>
               Email<span class='req'>*</span>
             </label>
-            <input type='email' required autocomplete='off' />
+            <input bind:value={email} type='email' required autocomplete='off' />
           </div>
           <div class='field-wrap'>
             <label>
               Password<span class='req'>*</span>
             </label> 
-            <input type='password' required autocomplete='off' />
+            <input bind:value={password} type='password' required autocomplete='off' />
           </div>
-          <button type='submit' class='button button-block'>Now git on this ship!</button>
+          <button on:click|preventDefault={e => submit(e, 'login')} type='submit' class='button button-block'>Now git on this ship!</button>
         </form>
       </div>
+      {/if}
     </div>
   </div>
 </login>
