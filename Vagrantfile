@@ -76,6 +76,34 @@ Vagrant.configure("2") do |config|
     sudo tar -C /usr/local -xzf go.tar.gz
     sudo su -c 'echo "export PATH=$PATH:/usr/local/go/bin:/home/vagrant/go/bin" >> /etc/profile'
     source /etc/profile
+    
+  SHELL
+  # minikube
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt install conntrack
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+      && chmod +x minikube
+    sudo install ./minikube /usr/local/bin
+    rm ./minikube
+  SHELL
+  # kubectl
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "[+] Installing kubectl..."
+    export URL_BASE=https://storage.googleapis.com/kubernetes-release/release/
+    export VER=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+    # assuming 64 bit linux here.
+    # can expand this later to work for other systems, maybe.
+    echo "[!] kubectl version: $VER"
+    export URL="$URL_BASE$VER/bin/linux/amd64/kubectl"
+    echo "[!] $URL"
+    curl -LO $URL
+    chmod +x ./kubectl
+    sudo mv ./kubectl /usr/local/bin/kubectl
+    echo "[!] $(kubectl version --short --client)"
+    echo "[!] Done!"
+  SHELL
+  # arrrspace
+  config.vm.provision "shell", inline: <<-SHELL
     sudo su - vagrant -c "cd /src && ./setup.sh"
   SHELL
 end

@@ -30,48 +30,23 @@ if [[ ! $(pgrep -f docker) ]]; then
   echo "[!] Error: Docker daemon does not appear to be running"
   exit 1
 fi
-
-# Get kind
-if [[ ! $(which kind 2>/dev/null) ]]; then
-  echo "[+] Installing kind..."
-  GO111MODULE="on" go get -u sigs.k8s.io/kind@master
-  # Add the go bin dir to bash profile
-  echo "[+] Adding \$GOPATH/bin to PATH and ~/.bashrc"
-  echo "export PATH=\$PATH:\$(go env GOPATH)/bin" >> ~/.bashrc
-  echo "[!] $(kind version 2>&1)"
-else
-  echo "[!] kind installed $(kind version 2>&1)"
+# has minikube?
+if [[ ! $(which minikube 2>/dev/null) ]]; then
+  echo "[!] Error: Minikube does not appear to be installed"
+  exit 1
 fi
-
-# install kubectl
+# has kubectl
 if [[ ! $(which kubectl 2>/dev/null) ]]; then
-  echo "[+] Installing kubectl..."
-  URL_BASE=https://storage.googleapis.com/kubernetes-release/release/
-  VER=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-  # assuming 64 bit linux here.
-  # can expand this later to work for other systems, maybe.
-  echo "[!] kubectl version: $VER"
-  URL="$URL_BASE$VER/bin/linux/amd64/kubectl"
-  echo "[!] $URL"
-  curl -LO $URL
-  chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin/kubectl
-  echo "[!] $(kubectl version --short --client)"
-  echo "[!] Done!"
-else
-  echo "[!] kubectl installed"
-  echo "    $(kubectl version --short --client)"
+  echo "[!] Error: kubectl does not appear to be installed"
+  exit 1
 fi
 
 # Start up a cluster
 echo -e "[+] Creating a local cluster...\n"
-if [[ $(kind get clusters | grep "arrrspace") ]]; then
-  kind delete cluster --name arrrspace >/dev/null
-fi
-kind create cluster --name arrrspace
-# apply kubectl config
-export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
-# need to load images and apply the configurations to the cluster.
+sudo minikube start --driver=none
+## apply kubectl config
+#export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
+## need to load images and apply the configurations to the cluster.
 
 echo "[!] Cluster created"
 
@@ -86,18 +61,18 @@ for target in "${IMAGES[@]}"; do
   cd ../
 done;
 
-echo "[+] Loading docker images into k8s cluster"
-
-for target in "${IMAGES[@]}"; do
-  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-  echo -e "[+] Loading arrrspace-${target} image"
-  kind load docker-image arrrspace-$TARGET_LOWER:v1 --name arrrspace
-done
+#echo "[+] Loading docker images into k8s cluster"
+#
+#for target in "${IMAGES[@]}"; do
+#  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+#  echo -e "[+] Loading arrrspace-${target} image"
+#  kind load docker-image arrrspace-$TARGET_LOWER:v1 --name arrrspace
+#done
 
 echo "[+] Applying k8s configs"
 
-kubectl apply -f k8s-resources/
-kubectl get deployments,services,pods
+sudo kubectl apply -f k8s-resources/
+sudo kubectl get deployments,services,pods
 
 MASTER_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' arrrspace-control-plane)
 echo -e "\n[!] All done :)"
