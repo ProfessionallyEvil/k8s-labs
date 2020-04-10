@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -9,8 +9,17 @@ metadata:
     io.kompose.service: feedsvc
   name: feedsvc
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
-  strategy: {}
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      io.kompose.service: feedsvc
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       creationTimestamp: null
@@ -18,8 +27,15 @@ spec:
         io.kompose.service: feedsvc
     spec:
       containers:
-        - image: arrrspace-feedsvc:v1
-          name: feedsvc
-          resources: {}
+      - image: arrrspace-feedsvc:v1
+        imagePullPolicy: IfNotPresent
+        name: feedsvc
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 status: {}
