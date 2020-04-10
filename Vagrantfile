@@ -1,5 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+<<<<<<< HEAD
+=======
+require 'yaml'
+# config file
+opts = YAML.load(File.read("./opts.yml"))
+# p opts
+>>>>>>> 8873d39a708e59e4bf9d644958bc2fc427c776a4
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-18.04"
@@ -58,4 +65,10 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo su - vagrant -c "cd /src && ./setup.sh"
   SHELL
+<<<<<<< HEAD
+=======
+  # grab ssh key for pushing to github
+  config.vm.provision "file", source: opts["sshKeyFile"], destination: "$HOME/.ssh/id_rsa"
+  config.vm.provision "file", source: opts["sshKeyFile"] + ".pub", destination: "$HOME/.ssh/id_rsa.pub"
+>>>>>>> 8873d39a708e59e4bf9d644958bc2fc427c776a4
 end
