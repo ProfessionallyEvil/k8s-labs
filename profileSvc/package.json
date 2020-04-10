@@ -6,7 +6,7 @@
   "dependencies": {
     "json-web-token": "^3.0.1",
     "minio": "^7.0.10",
-    "mongoose": "^5.6.0",
+    "mongoose": "^5.7.5",
     "restify": "^8.3.3"
   },
   "devDependencies": {
