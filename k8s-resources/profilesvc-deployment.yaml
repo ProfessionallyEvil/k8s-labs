@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -9,8 +9,17 @@ metadata:
     io.kompose.service: profilesvc
   name: profilesvc
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
-  strategy: {}
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      io.kompose.service: profilesvc
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       creationTimestamp: null
@@ -18,13 +27,20 @@ spec:
         io.kompose.service: profilesvc
     spec:
       containers:
-        - env:
-            - name: MINIO_ACCESS_KEY
-              value: accesskey
-            - name: MINIO_SECRET_KEY
-              value: secretkey
-          image: arrrspace-profilesvc:v1
-          name: profilesvc
-          resources: {}
+      - env:
+        - name: MINIO_ACCESS_KEY
+          value: accesskey
+        - name: MINIO_SECRET_KEY
+          value: secretkey
+        image: arrrspace-profilesvc:v1
+        imagePullPolicy: IfNotPresent
+        name: profilesvc
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 status: {}

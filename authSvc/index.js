@@ -15,7 +15,11 @@ const User = mongoose.model('User', new mongoose.Schema({
 var server = restify.createServer({ name: 'authService' })
 
 server.oauth = new OAuthServer({
-  model: {}
+  model: {
+    getClient: function() {
+      console.log('getClient()');
+    }
+  }
 })
 
 server.use(restify.plugins.acceptParser(server.acceptable))

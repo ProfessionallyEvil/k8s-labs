@@ -1,6 +1,6 @@
 #!/usr/bin/env bash 
 set -eou pipefail
-#set -x
+set -x
 IFS=$'\n\t'
 
 IMAGES=(
@@ -15,11 +15,6 @@ IMAGES=(
 )
 DEPS=()
 
-# has golang?
-if [[ ! $(which go 2>/dev/null) ]]; then
-  echo "[!] Error: Golang does not appear to be installed."
-  exit 1
-fi
 # has docker?
 if [[ ! $(which docker 2>/dev/null) ]]; then
   echo "[!] Error: Docker does not appear to be installed"
@@ -30,6 +25,7 @@ if [[ ! $(pgrep -f docker) ]]; then
   echo "[!] Error: Docker daemon does not appear to be running"
   exit 1
 fi
+<<<<<<< HEAD
 # has minikube?
 if [[ ! $(which minikube 2>/dev/null) ]]; then
   echo "[!] Error: Minikube does not appear to be installed"
@@ -49,6 +45,8 @@ sudo minikube start --driver=none
 ## need to load images and apply the configurations to the cluster.
 
 echo "[!] Cluster created"
+=======
+>>>>>>> 44e419b42ca7a72c05472270bb9c84968f2162a4
 
 echo "[!] Building Docker images"
 
@@ -61,6 +59,7 @@ for target in "${IMAGES[@]}"; do
   cd ../
 done;
 
+<<<<<<< HEAD
 #echo "[+] Loading docker images into k8s cluster"
 #
 #for target in "${IMAGES[@]}"; do
@@ -78,3 +77,6 @@ MASTER_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddr
 echo -e "\n[!] All done :)"
 echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
 echo "[!] Don't forget to run - export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")""
+=======
+echo "[!] All done :)"
+>>>>>>> 44e419b42ca7a72c05472270bb9c84968f2162a4
