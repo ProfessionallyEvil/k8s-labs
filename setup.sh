@@ -69,8 +69,6 @@ echo "[+] Applying k8s configs"
 sudo kubectl apply -f k8s-resources/
 sudo kubectl get deployments,services,pods
 
-MASTER_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' arrrspace-control-plane)
-echo -e "\n[!] All done :)"
+MASTER_NODE_IP=$(sudo minikube ip)
 echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
-echo "[!] Don't forget to run - export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")""
 echo "[!] All done :)"
