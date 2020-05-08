@@ -38,7 +38,7 @@ fi
 
 # Start up a cluster
 echo -e "[+] Creating a local cluster...\n"
-minikube start --driver=none
+minikube start --driver=docker
 ## apply kubectl config
 #export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
 ## need to load images and apply the configurations to the cluster.
