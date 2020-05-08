@@ -38,7 +38,7 @@ fi
 
 # Start up a cluster
 echo -e "[+] Creating a local cluster...\n"
-sudo minikube start --driver=none
+minikube start --driver=none
 ## apply kubectl config
 #export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
 ## need to load images and apply the configurations to the cluster.
@@ -56,6 +56,9 @@ for target in "${IMAGES[@]}"; do
   cd ../
 done;
 
+# Enable the insecure docker registry
+minikube addons enable docker-registry
+
 #echo "[+] Loading docker images into k8s cluster"
 #
 #for target in "${IMAGES[@]}"; do
@@ -66,11 +69,9 @@ done;
 
 echo "[+] Applying k8s configs"
 
-sudo kubectl apply -f k8s-resources/
-sudo kubectl get deployments,services,pods
+kubectl apply -f k8s-resources/
+kubectl get deployments,services,pods
 
-MASTER_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' arrrspace-control-plane)
-echo -e "\n[!] All done :)"
+MASTER_NODE_IP=$(sudo minikube ip)
 echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
-echo "[!] Don't forget to run - export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")""
 echo "[!] All done :)"
