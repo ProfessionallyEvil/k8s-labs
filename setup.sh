@@ -69,18 +69,18 @@ if [[ "$#" -eq 0 ]]; then
 fi;
 
 # Start up a cluster
-if [[ "$1" -eq "create_cluster" || "$1" -eq "all" ]]; then
+if [[ "$1" -eq "createcluster" || "$1" -eq "all" ]]; then
   echo -e "[+] Creating a local cluster...\n"
   setup_cluster
   echo "[!] Cluster created"
 fi;
 
-if [[ "$1" -eq "build_images" || "$1" -eq "all" ]]; then
+if [[ "$1" -eq "buildimages" || "$1" -eq "all" ]]; then
   echo "[!] Building Docker images"
   build_images
 fi;
 
-if [[ "$1" -eq "push_images" || "$1" -eq "all" ]]; then
+if [[ "$1" -eq "pushimages" || "$1" -eq "all" ]]; then
   echo "[+] Loading docker images into k8s cluster"
   push_images
 fi;
