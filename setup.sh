@@ -1,5 +1,5 @@
 #!/usr/bin/env bash 
-set -eou pipefail
+set -eo pipefail
 set -x
 IFS=$'\n\t'
 
@@ -63,6 +63,10 @@ push_images () {
 deploy () {
   kubectl apply -f k8s-resources/
 }
+
+if [[ "$#" -eq 0 ]]; then
+  exit 1
+fi;
 
 # Start up a cluster
 if [[ "$1" -eq "create_cluster" || "$1" -eq "all" ]]; then
