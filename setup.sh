@@ -55,7 +55,7 @@ build_images () {
 
 push_images () {
   for image in "${IMAGES[@]}"; do
-    IMAGE_LOWER=$(echo "$image" | tr '[:upper:]' '[:lower:]')
+    IMAGE_LOWER=$(echo "$image" || tr '[:upper:]' '[:lower:]')
     docker push $(minikube ip):5000/arrrspace-$IMAGE_LOWER:v1
   done;
 }
@@ -65,23 +65,23 @@ deploy () {
 }
 
 # Start up a cluster
-if [[ "$1" -eq "create_cluster" | "$1" -eq "all" ]]; then
+if [[ "$1" -eq "create_cluster" || "$1" -eq "all" ]]; then
   echo -e "[+] Creating a local cluster...\n"
   setup_cluster
   echo "[!] Cluster created"
 fi;
 
-if [[ "$1" -eq "build_images" | "$1" -eq "all" ]]; then
+if [[ "$1" -eq "build_images" || "$1" -eq "all" ]]; then
   echo "[!] Building Docker images"
   build_images
 fi;
 
-if [[ "$1" -eq "push_images" | "$1" -eq "all" ]]; then
+if [[ "$1" -eq "push_images" || "$1" -eq "all" ]]; then
   echo "[+] Loading docker images into k8s cluster"
   push_images
 fi;
 
-if [[ "$1" -eq "deploy" | "$1" -eq "all" ]]; then
+if [[ "$1" -eq "deploy" || "$1" -eq "all" ]]; then
   echo "[+] Applying k8s configs"
   deploy
   kubectl get deployments,services,pods
