@@ -36,41 +36,57 @@ if [[ ! $(which kubectl 2>/dev/null) ]]; then
   exit 1
 fi
 
+setup_cluster () {
+  minikube start --driver=docker --force
+  minikube addons enable registry
+}
+
+build_images () {
+  for target in "${IMAGES[@]}"; do
+    cd $(pwd)/$target
+    echo -e "\n[+] ======== Building image $target ========\n"
+    cat Dockerfile
+    TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+    docker build -t $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1 .
+    #docker push $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1
+    cd ../
+  done; 
+}
+
+push_images () {
+  for image in "${IMAGES[@]}"; do
+    IMAGE_LOWER=$(echo "$image" | tr '[:upper:]' '[:lower:]')
+    docker push $(minikube ip):5000/arrrspace-$IMAGE_LOWER:v1
+  done;
+}
+
+deploy () {
+  kubectl apply -f k8s-resources/
+}
+
 # Start up a cluster
-echo -e "[+] Creating a local cluster...\n"
-minikube start --driver=docker --force
-minikube addons enable registry
-## apply kubectl config
-#export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
-## need to load images and apply the configurations to the cluster.
+if [[ "$1" -eq "create_cluster" | "$1" -eq "all" ]]; then
+  echo -e "[+] Creating a local cluster...\n"
+  setup_cluster
+  echo "[!] Cluster created"
+fi;
 
-echo "[!] Cluster created"
+if [[ "$1" -eq "build_images" | "$1" -eq "all" ]]; then
+  echo "[!] Building Docker images"
+  build_images
+fi;
 
-echo "[!] Building Docker images"
+if [[ "$1" -eq "push_images" | "$1" -eq "all" ]]; then
+  echo "[+] Loading docker images into k8s cluster"
+  push_images
+fi;
 
-for target in "${IMAGES[@]}"; do
-  cd $(pwd)/$target
-  echo -e "\n[+] ======== Building image $target ========\n"
-  cat Dockerfile
-  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-  docker build -t $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1 .
-  docker push $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1
-  cd ../
-done;
+if [[ "$1" -eq "deploy" | "$1" -eq "all" ]]; then
+  echo "[+] Applying k8s configs"
+  deploy
+  kubectl get deployments,services,pods
+fi;
 
-#echo "[+] Loading docker images into k8s cluster"
-#
-#for target in "${IMAGES[@]}"; do
-#  TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-#  echo -e "[+] Loading arrrspace-${target} image"
-#  kind load docker-image arrrspace-$TARGET_LOWER:v1 --name arrrspace
-#done
-
-echo "[+] Applying k8s configs"
-
-kubectl apply -f k8s-resources/
-kubectl get deployments,services,pods
-
-MASTER_NODE_IP=$(sudo minikube ip)
-echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
-echo "[!] All done :)"
+#MASTER_NODE_IP=$(sudo minikube ip)
+#echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
+#echo "[!] All done :)"
