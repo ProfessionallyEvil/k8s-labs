@@ -68,28 +68,56 @@ if [[ "$#" -eq 0 ]]; then
   exit 1
 fi;
 
-# Start up a cluster
-if [[ "$1" -eq "createcluster" || "$1" -eq "all" ]]; then
+opt="$1"
+case opt in
+  createcluster)
   echo -e "[+] Creating a local cluster...\n"
   setup_cluster
   echo "[!] Cluster created"
-fi;
-
-if [[ "$1" -eq "buildimages" || "$1" -eq "all" ]]; then
+  ;;
+  buildimages)
   echo "[!] Building Docker images"
   build_images
-fi;
-
-if [[ "$1" -eq "pushimages" || "$1" -eq "all" ]]; then
+  ;;
+  pushimages)
   echo "[+] Loading docker images into k8s cluster"
   push_images
-fi;
-
-if [[ "$1" -eq "deploy" || "$1" -eq "all" ]]; then
-  echo "[+] Applying k8s configs"
+  ;;
+  deployservices)
+  echo "[+] Applying K8S configs"
   deploy
   kubectl get deployments,services,pods
-fi;
+  ;;
+  all)
+  setup_cluster
+  build_images
+  push_images
+  deploy
+  ;;
+esac
+
+# Start up a cluster
+#if [[ "$1" -eq "createcluster" || "$1" -eq "all" ]]; then
+#  echo -e "[+] Creating a local cluster...\n"
+#  setup_cluster
+#  echo "[!] Cluster created"
+#fi;
+#
+#if [[ "$1" -eq "buildimages" || "$1" -eq "all" ]]; then
+#  echo "[!] Building Docker images"
+#  build_images
+#fi;
+#
+#if [[ "$1" -eq "pushimages" || "$1" -eq "all" ]]; then
+#  echo "[+] Loading docker images into k8s cluster"
+#  push_images
+#fi;
+#
+#if [[ "$1" -eq "deploy" || "$1" -eq "all" ]]; then
+#  echo "[+] Applying k8s configs"
+#  deploy
+#  kubectl get deployments,services,pods
+#fi;
 
 #MASTER_NODE_IP=$(sudo minikube ip)
 #echo "[!] cluster master node ip: ${MASTER_NODE_IP}"
