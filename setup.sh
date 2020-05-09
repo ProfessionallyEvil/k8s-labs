@@ -39,6 +39,7 @@ fi
 # Start up a cluster
 echo -e "[+] Creating a local cluster...\n"
 minikube start --driver=docker --force
+minikube addons enable registry
 ## apply kubectl config
 #export KUBECONFIG="$(kind get kubeconfig-path --name="arrrspace")"
 ## need to load images and apply the configurations to the cluster.
@@ -52,12 +53,10 @@ for target in "${IMAGES[@]}"; do
   echo -e "\n[+] ======== Building image $target ========\n"
   cat Dockerfile
   TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-  docker build -t arrrspace-$TARGET_LOWER:v1 .
+  docker build -t $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1 .
+  docker push $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1
   cd ../
 done;
-
-# Enable the insecure docker registry
-minikube addons enable registry
 
 #echo "[+] Loading docker images into k8s cluster"
 #
