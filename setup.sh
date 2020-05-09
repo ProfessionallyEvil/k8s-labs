@@ -57,7 +57,7 @@ for target in "${IMAGES[@]}"; do
 done;
 
 # Enable the insecure docker registry
-minikube addons enable docker-registry
+minikube addons enable registry
 
 #echo "[+] Loading docker images into k8s cluster"
 #
