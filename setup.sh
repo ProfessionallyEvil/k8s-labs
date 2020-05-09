@@ -48,7 +48,7 @@ echo "[!] Cluster created"
 echo "[!] Building Docker images"
 
 for target in "${IMAGES[@]}"; do
-  cd ./$target
+  cd $(pwd)/$target
   echo -e "\n[+] ======== Building image $target ========\n"
   cat Dockerfile
   TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
