@@ -12,6 +12,7 @@ IMAGES=(
   "profileSvc"
   "simpleStorage"
   "dbaseSvc"
+  "base"
 )
 DEPS=()
 
