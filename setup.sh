@@ -87,7 +87,6 @@ case $opt in
   "all")
     setup_cluster
     build_images
-    push_images
     deploy
     ;;
 esac
