@@ -38,18 +38,17 @@ fi
 
 setup_cluster () {
   minikube start --driver=docker --force
-  minikube addons enable registry
+  #minikube addons enable registry
 }
 
 build_images () {
+  eval $(minikube docker-env)
   for target in "${IMAGES[@]}"; do
     cd $(pwd)/$target
     echo -e "\n[+] ======== Building image $target ========\n"
     cat Dockerfile
     TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-    eval $(minikube docker-env)
-    docker build -t $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1 .
-    #docker push $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1
+    docker build -t arrrspace-$TARGET_LOWER:v1 .
     cd ../
   done; 
 }
@@ -79,10 +78,6 @@ case $opt in
   "buildimages")
     echo "[!] Building Docker images"
     build_images
-    ;;
-  "pushimages")
-    echo "[+] Loading docker images into k8s cluster"
-    push_images
     ;;
   "deployservices")
     echo "[+] Applying K8S configs"
