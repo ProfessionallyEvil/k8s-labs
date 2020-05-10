@@ -70,7 +70,7 @@ if [[ "$#" -eq 0 ]]; then
 fi;
 
 opt="$1"
-case opt in
+case $opt in
   "createcluster")
     echo -e "[+] Creating a local cluster...\n"
     setup_cluster
