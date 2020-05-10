@@ -71,30 +71,30 @@ fi;
 
 opt="$1"
 case opt in
-  createcluster)
-  echo -e "[+] Creating a local cluster...\n"
-  setup_cluster
-  echo "[!] Cluster created"
-  ;;
-  buildimages)
-  echo "[!] Building Docker images"
-  build_images
-  ;;
-  pushimages)
-  echo "[+] Loading docker images into k8s cluster"
-  push_images
-  ;;
-  deployservices)
-  echo "[+] Applying K8S configs"
-  deploy
-  kubectl get deployments,services,pods
-  ;;
-  all)
-  setup_cluster
-  build_images
-  push_images
-  deploy
-  ;;
+  "createcluster")
+    echo -e "[+] Creating a local cluster...\n"
+    setup_cluster
+    echo "[!] Cluster created"
+    ;;
+  "buildimages")
+    echo "[!] Building Docker images"
+    build_images
+    ;;
+  "pushimages")
+    echo "[+] Loading docker images into k8s cluster"
+    push_images
+    ;;
+  "deployservices")
+    echo "[+] Applying K8S configs"
+    deploy
+    kubectl get deployments,services,pods
+    ;;
+  "all")
+    setup_cluster
+    build_images
+    push_images
+    deploy
+    ;;
 esac
 
 # Start up a cluster
