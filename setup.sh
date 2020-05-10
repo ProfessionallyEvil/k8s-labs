@@ -47,6 +47,7 @@ build_images () {
     echo -e "\n[+] ======== Building image $target ========\n"
     cat Dockerfile
     TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+    eval $(minikube docker-env)
     docker build -t $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1 .
     #docker push $(minikube ip):5000/arrrspace-$TARGET_LOWER:v1
     cd ../
