@@ -38,7 +38,8 @@ if [[ ! $(which kubectl 2>/dev/null) ]]; then
 fi
 
 setup_cluster () {
-  minikube start --driver=docker --force
+  # todo allow for cli flag specifcation of the driver
+  minikube start --driver=none --force
   #minikube addons enable registry
 }
 
