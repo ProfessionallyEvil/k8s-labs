@@ -13,6 +13,7 @@ ns2service
 autodiscoverservice
 autoconfigservice
 jenkins
+jenkinssvc
 nsservice
 testservice
 mservice
