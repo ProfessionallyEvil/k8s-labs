@@ -1,0 +1,6 @@
+GET / HTTP/1.1
+Host: ssrf.test:8000
+X-Original-Host: http://localhost:9876
+X-Original-Url: /users
+Connection: close
+

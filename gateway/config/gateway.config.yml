@@ -7,30 +7,10 @@ apiEndpoints:
   index:
     host: '*'
     paths: ['/']
-  profile:
-    host: '*'
-    paths: ['/profile/*']
-  feed:
-    host: '*'
-    paths: ['/feed/*']
-  auth:
-    host: '*'
-    paths: ['/auth/*']
-  jenkins:
-    host: '*'
-    paths: ['/jenkins/*']
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
 serviceEndpoints:
   indexProxy:
     url: "http://localhost:9100"
-  profilesvc:
-    url: "http://profilesvc:3000"
-  feedsvc:
-    url: "http://feedsvc:3000"
-  authsvc:
-    url: "http://authsvc:3000"
-  jenkinssvc:
-    url: "http://jenkinssvc:8080"
   # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
 policies:
   - basic-auth
@@ -51,107 +31,4 @@ pipelines:
         proxy:
           - action:
               serviceEndpoint: indexProxy
-  jenkins:
-    apiEndpoints:
-      - jenkins 
-    policies:
-      -
-        log:
-          - action:
-              message: ${req.method} ${req.originalUrl}
-      -
-        rewrite:
-          -
-            condition:
-              name: regexpmatch
-              match: ^/jenkins/(.*)$
-            action:
-              rewrite: /$1
-      -
-        proxy:
-          -
-            action:
-              serviceEndpoint: jenkinssvc
-  feed:
-    apiEndpoints:
-      - feed
-    policies:
-      -
-        cors:
-          -
-            action:
-              origin: true
-              methods: 'GET,POST'
-              allowedHeaders: ['Content-Type', 'Authorization']
-              credentials: true
-              optionsSuccessStatus: 204
-      -
-        log:
-          - action:
-              message: ${req.method} ${req.originalUrl}
-      -
-        rewrite:
-          -
-            condition:
-              name: regexpmatch
-              match: ^/feed/(.*)$
-            action:
-              rewrite: /$1
-      -
-        proxy:
-          -
-            action:
-              serviceEndpoint: feedsvc
-  profile:
-    apiEndpoints:
-      - profile
-    policies:
-      -
-        cors:
-          -
-            action:
-              origin: true
-              methods: 'GET,POST'
-              allowedHeaders: ['Content-Type', 'Authorization']
-              credentials: true
-              optionsSuccessStatus: 204
-      -
-        rewrite:
-          -
-            condition:
-              name: regexpmatch
-              match: ^/profile/(.*)$
-            action:
-              rewrite: /$1
-      -
-        proxy:
-          -
-            action:
-              serviceEndpoint: profilesvc
-  auth:
-    apiEndpoints:
-      - auth
-    policies:
-      -
-        cors:
-          -
-            action:
-              origin: true
-              methods: 'GET,POST'
-              allowedHeaders: ['Content-Type', 'Authorization']
-              credentials: true
-              optionsSuccessStatus: 204
-      -
-        rewrite:
-          -
-            condition:
-              name: regexpmatch
-              match: ^/auth/(.*)$
-            action:
-              rewrite: /$1
-      -
-        proxy:
-          -
-            action:
-              serviceEndpoint: authsvc
   # see: https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines
