@@ -7,7 +7,7 @@ services:
     image: ssrf-gateway
     ports:
       - "8000:8080"
-  internalservice:
+  secretcat:
     image: nginx:alpine
     volumes:
       - ./html:/usr/share/nginx/html/
