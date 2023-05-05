@@ -1,4 +1,0 @@
-def command = "cat /var/run/secrets/kubernetes.io/serviceaccount/token"
-def proc = command.execute()
-proc.waitFor()
-println "${proc.in.text}"

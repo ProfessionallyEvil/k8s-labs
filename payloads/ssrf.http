@@ -1,0 +1,5 @@
+GET / HTTP/1.1
+Host: ssrf.test:8000
+X-Original-Host: http://internalservice
+X-Original-Url: /
+Connection: close

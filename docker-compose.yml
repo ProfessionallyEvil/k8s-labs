@@ -7,11 +7,9 @@ services:
     image: ssrf-gateway
     ports:
       - "8000:8080"
-      - "9876:9876"
-    environment:
-      - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
-      - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
-    networks:
-      - eg
-networks:
-  eg:
+  internalservice:
+    image: nginx:alpine
+    volumes:
+      - ./html:/usr/share/nginx/html/
+    ports:
+     - "80"
