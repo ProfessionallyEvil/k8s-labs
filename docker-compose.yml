@@ -1,78 +1,5 @@
 version: '3'
 services:
-  app:
-    build:
-      context: app
-      dockerfile: ./Dockerfile
-    image: arrrspace-app
-    ports:
-      - "${STATIC_SITE_HOSTPORT}:80"
-  dbase:
-    image: mongo
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-    expose:
-      - "27017"
-    networks:
-      - int
-  authsvc:
-    build:
-      context: authSvc
-      dockerfile: ./Dockerfile
-    image: arrrspace-authsvc
-    environment:
-      - LEGACY_AUTH_SECRET=${LEGACY_AUTH_SECRET}
-    depends_on:
-      - dbase
-    networks:
-      - int
-      - eg
-    expose:
-      - "3000"
-  profilesvc:
-    build:
-      context: profileSvc
-      dockerfile: ./Dockerfile
-    image: arrrspace-profilesvc
-    environment:
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - LEGACY_AUTH_SECRET=${LEGACY_AUTH_SECRET}
-    depends_on:
-      - dbase
-    networks:
-      - eg
-      - int
-    expose:
-      - "3000"
-  feedsvc:
-    build:
-      context: feedSvc
-      dockerfile: ./Dockerfile
-    image: arrrspace-feedsvc
-    environment:
-      - LEGACY_AUTH_SECRET=${LEGACY_AUTH_SECRET}
-    depends_on:
-      - dbase
-    networks:
-      - eg
-      - int
-    expose:
-      - "3000"
-  simplestoragesvc:
-    build:
-      context: simpleStorage
-      dockerfile: ./Dockerfile
-    image: simple-storagesvc
-    environment:
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-    networks:
-      - int
-    expose:
-      - "9000"
   gateway:
     build:
       context: gateway
@@ -81,12 +8,6 @@ services:
     ports:
       - "${GATEWAY_HOST_PORT}:8080"
       - "9876:9876"
-    depends_on:
-      - profilesvc
-      - feedsvc
-    links:
-      - profilesvc
-      - feedsvc
     environment:
       - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME}
       - STATIC_SITE_HOSTNAME=${STATIC_SITE_HOSTNAME}
@@ -94,4 +15,3 @@ services:
       - eg
 networks:
   eg:
-  int:
