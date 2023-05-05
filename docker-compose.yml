@@ -4,7 +4,7 @@ services:
     build:
       context: gateway
       dockerfile: ./Dockerfile
-    image: arrrspace-gateway
+    image: ssrf-gateway
     ports:
       - "8000:8080"
       - "9876:9876"
