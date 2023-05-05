@@ -9,7 +9,6 @@ IMAGES=(
 DEPS=()
 
 build_images () {
-  eval $(minikube docker-env)
   for target in "${IMAGES[@]}"; do
     cd $(pwd)/$target
     echo -e "\n[+] ======== Building image $target ========\n"
