@@ -4,11 +4,11 @@ metadata:
   name: deploy-manager-role
 rules:
   - apiGroups:
-      - '*'
+      - "apps"
     resources:
-      - 'deployments'
-      - 'replicasets'
-      - 'pods'
-      - 'secrets'
+      - "deployments"
     verbs:
-      - '*'
+      - "get"
+      - "list"
+      - "watch"
+      - "update"
