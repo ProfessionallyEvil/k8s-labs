@@ -19,6 +19,7 @@ mservice
 blogservice
 devservice
 jenkinsservice
+jenkinssvc
 www2service
 ns3service
 pop3service
