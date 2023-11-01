@@ -13,8 +13,8 @@ const server = http.createServer(function (req, res) {
   // contruct the URL to proxy to
   console.log(req.headers); 
   if (!req.headers['x-original-host']) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('\nWelcome aboard the Arrrspace API!\n');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end('{"msg": "this is an API, welcome.", "status": 200}');
     return;
   }
   const path = (req.headers['x-original-url'] ? req.headers['x-original-url'] : '/');
