@@ -33,7 +33,7 @@ fi
 
 setup_cluster () {
   # todo allow for cli flag specifcation of the driver
-  minikube start --driver=docker
+  minikube start --driver=docker --force
   #minikube addons enable registry
 }
 
