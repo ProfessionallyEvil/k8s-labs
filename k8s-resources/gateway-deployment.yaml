@@ -1,12 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f ../docker-compose.yml
-    kompose.version: 1.17.0 (a74acad)
-  creationTimestamp: null
-  labels:
-    io.kompose.service: gateway
   name: gateway
 spec:
   progressDeadlineSeconds: 2147483647
@@ -14,7 +8,7 @@ spec:
   revisionHistoryLimit: 2147483647
   selector:
     matchLabels:
-      io.kompose.service: gateway
+      app: gateway
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -24,7 +18,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: gateway
+        app: gateway
     spec:
       containers:
       - env:
