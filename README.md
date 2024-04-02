@@ -10,7 +10,7 @@ This repository houses a deliberately vulnerable k8s cluster and vulnerable serv
 - Access the external API gateway at `localhost:31337/api` and start hacking
 
 ## Guide
-TODO
+See [guide.md](/guide.md) for one way to hack the cluster.
 
 ## Stay Tuned :satellite:
 
