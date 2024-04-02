@@ -10,31 +10,29 @@ IMAGES=(
 )
 DEPS=()
 
-# has docker?
-if [[ ! $(which docker 2>/dev/null) ]]; then
-  echo "[!] Error: Docker does not appear to be installed"
-  exit 1
-fi
-# has docker running?
-if [[ ! $(pgrep -f docker) ]]; then
-  echo "[!] Error: Docker daemon does not appear to be running"
-  exit 1
-fi
-# has minikube?
-if [[ ! $(which minikube 2>/dev/null) ]]; then
-  echo "[!] Error: Minikube does not appear to be installed"
-  exit 1
-fi
-# has kubectl
-if [[ ! $(which kubectl 2>/dev/null) ]]; then
-  echo "[!] Error: kubectl does not appear to be installed"
-  exit 1
-fi
-
 setup_cluster () {
-  # todo allow for cli flag specifcation of the driver
-  minikube start --driver=docker --force
-  #minikube addons enable registry
+cat <<EOF | kind create cluster --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 8080
+    hostPort: 31337 
+    protocol: TCP
+EOF
+
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+  kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
 }
 
 build_images () {
@@ -44,7 +42,8 @@ build_images () {
     echo -e "\n[+] ======== Building image $target ========\n"
     cat Dockerfile
     TARGET_LOWER=$(echo "$target" | tr '[:upper:]' '[:lower:]')
-    minikube image build -t k8s-labs-$TARGET_LOWER:v1 .
+    docker image build -t k8s-labs-$TARGET_LOWER:v1 .
+    kind load docker-image k8s-labs-$TARGET_LOWER:v1
     cd ../
   done; 
 }
