@@ -31,7 +31,7 @@ You can also proxy the traffic from ffuf through BurpSuite if you want using `-x
 When we discover a HTTP header that gives us an interesting response such as a 500, we can then fuzz the value of said header.
 
 ```
-ffuf -w k8s-labs/payloads/wordlist -u http://localhost:31337/ -H "X-Original-Host: http://FUZZ:8080" -c -od req_res -x 127.0.0.1:8080
+ffuf -w k8s-labs/payloads/wordlist -u http://localhost:31337/api -H "X-Original-Host: http://FUZZ:8080" -c -od req_res
 ```
 
 For this one we are looking for indications that the backend is trying to resolve the values to IP addresses. So, for example if we get an error message that seems to indicate that it failed to resolve, then we know that value is not a viable SSRF target. However, if a value causes a timeout, or possibly a different error, then we can guess that it might likely be a viable target, for which we would need to then try to guess a port number for.
